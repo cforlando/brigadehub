@@ -1,11 +1,12 @@
-<img src="https://cdn.rawgit.com/brigadehub/brigadehub/develop/assets/rasterized/logo-banner-color-white.png" alt="Brigadehub"/>
+<img src="https://cdn.rawgit.com/brigadehub/brigadehub/master/assets/rasterized/logo-banner-color-white.png" alt="Brigadehub"/>
 
 ---
 
 [![TrustOSS Compliant](http://trustoss.org/badge_version.svg)](http://trustoss.org)
 [![Build Status](https://travis-ci.org/brigadehub/brigadehub.svg?branch=edge)](https://travis-ci.org/brigadehub/brigadehub)
 [![npm](https://img.shields.io/npm/v/brigadehub.svg?maxAge=2592000)](https://www.npmjs.com/package/brigadehub)
-[![Slack Status](https://sfbrigade-slackin.herokuapp.com/badge.svg)](https://sfbrigade-slackin.herokuapp.com/)
+[![Gitter](https://img.shields.io/gitter/room/brigadehub/Lobby.svg)](https://gitter.im/brigadehub/Lobby)
+[![IRC](https://camo.githubusercontent.com/2fecf7a682dcdd4c2be514294ef18a6ef5773942/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f636861742d6f6e2532304952432d677265656e2e737667)](http://webchat.freenode.net/?channels=#brigadehub)
 [![Keep A Changelog](https://img.shields.io/badge/Keep%20A-Changelog-blue.svg?style=flat)](http://keepachangelog.com/)
 [![JS Standard](https://img.shields.io/badge/JS-Standard-yellow.svg?style=flat)](https://github.com/feross/standard)
 
@@ -60,6 +61,8 @@ There are three different ways of interacting with/using Brigadehub:
 
 Depending on the needs of your organization, you'll want to decide which will work best for you.
 
+*Note: Unless otherwise specified, links like `location.of.mongo` and `path/to/file` do not represent the actual link you need to use in your enviroment, and should be replaced with the appropriate locations.*
+
 #### Suite
 
 **Brigadehub Suite** is the flagship install of Brigadehub, and is more or less a ***brigade-in-a-box***. It installs three components: **Core**, **Admin Theme**, and **Public Theme**. It's deployed in such a way that you should never *need* to touch the code, but if you *want* to, it's a simple matter. It provides Admin tools to manage your brigade information, and a slick frontend to display the info you're managing. Your frontend developers can dynamically pull the data about your brigade via the Core API if they have external tools that need the same data. And you can rest assured that we'll be working on patches and updates over time to make this the most secure and stable platform ever.
@@ -91,12 +94,13 @@ docker run -d --expose=8080:desiredport -e MONGODB='mongodb://location.of.mongo:
 <details><summary><img src="https://www.npmjs.com/static/images/touch-icons/favicon-32x32.png" height="25" /> NPM CLI (click to open)</summary><p>
 ***Pre-requisites***
 
-- [Node 6+](https://nodejs.org/en/)
+- [Node 6.x](https://nodejs.org/en/)
 - A running mongo instance
+- [Yarn](https://yarnpkg.com/en/) - For installation and package management (replaces NPM in this project)
 
 ***Installation and Running***
 ```bash
-npm install -g brigadehub
+yarn global add brigadehub
 PORT=desiredport MONGODB_URI=mongodb://location.of.mongo:27017/brigadehub-suite brigadehub-suite
 ```
 </p></details><br/>
@@ -105,15 +109,16 @@ PORT=desiredport MONGODB_URI=mongodb://location.of.mongo:27017/brigadehub-suite 
 ***Pre-requisites***
 
 - Git
-- [Node 6+](https://nodejs.org/en/)
+- [Node 6.x](https://nodejs.org/en/)
 - A running mongo instance
+- [Yarn](https://yarnpkg.com/en/) - For installation and package management (replaces NPM in this project)
 
 ***Installation and Running***
 ```bash
 git clone https://github.com/brigadehub/brigadehub
 cd brigadehub
 make install
-PORT=desiredport MONGODB_URI=mongodb://location.of.mongo:27017/brigadehub-suite make start
+make start
 ```
 </p></details>
 
@@ -125,46 +130,82 @@ To work on Brigadehub Suite as a developer, you need to clone and link internall
 ***Pre-requisites***
 
 - Git
-- [Node 6+](https://nodejs.org/en/)
+- [Node 6.x](https://nodejs.org/en/)
 - A running mongo instance
+- [Yarn](https://yarnpkg.com/en/) - For installation and package management (replaces NPM in this project)
 
 ***Installation and Running***
 
+First, clone the following repositories into your own account, either your organization's org or your personal account:
+
+- [brigadehub/brigadehub](https://github.com/brigadehub/brigadehub)
+- [brigadehub/core](https://github.com/brigadehub/core)
+- [brigadehub/theme-public-c4sf](https://github.com/brigadehub/theme-public-c4sf)
+- [brigadehub/theme-admin-c4sf](https://github.com/brigadehub/theme-admin-c4sf)
+
+Once you've forked all four, clone the repos locally (replacing `your-account` with the appropriate org/account name):
+
 ```bash
-git clone https://github.com/brigadehub/brigadehub
-git clone https://github.com/brigadehub/core
-git clone https://github.com/brigadehub/theme-public-c4sf
-git clone https://github.com/brigadehub/theme-admin-c4sf
+git clone https://github.com/your-account/brigadehub
+git clone https://github.com/your-account/core
+git clone https://github.com/your-account/theme-public-c4sf
+git clone https://github.com/your-account/theme-admin-c4sf
 ```
 
 In separate terminals, run the following:
 
 ```bash
 cd theme-public-c4sf
+make upstream/set
 make install
 make link
 ```
 
 ```bash
 cd theme-admin-c4sf
+make upstream/set
 make install
 make link
 ```
 
 ```bash
 cd core
+make upstream/set
 make install
 make link
 ```
 
 ```bash
 cd brigadehub
+make upstream/set
 make install
 make link
-MONGODB_URI=mongodb://location.of.mongo:27017/brigadehub-suite make start/develop
+make start/develop
 ```
 
 Any changes made in core, theme-public-c4sf, and theme-admin-c4sf will restart the server in brigadehub, and allow you to preview the changes. When you're done with your changes, make sure the tests pass via `make test`, and create a pull request from the appropriate repo.
+
+***Sync Changes with Upstream***
+
+To pull the most recent changes from `upstream/master`, run the following command:
+
+```
+make upstream/sync
+```
+
+This will fetch the upstream `master` branch and merge those changes into your local `master` branch.
+
+***Push Changes Upstream***
+
+To push your development changes back to the main brigadehub repo, push your changes up to your branch, and make a Pull Request into the upstream repository's `master` branch. Please include the following information in your pull request:
+
+- A description of the problem you are addressing (or feature being added)
+- A link to the related Github Issue (if applicable)
+- If making changes to UI, screenshots of the changes presented
+- List any deprecations that may be presented
+- If you are a new contributor, your name, github handle, and (optionally) website for the maintainers list
+
+Please keep in mind that application changes are subject to review and revision, and may be rejected at the project maintainers discretion.
 
 </p></details>
 
@@ -198,12 +239,13 @@ docker run -d --expose=8080:desiredport -e MONGODB='mongodb://location.of.mongo:
 <details><summary><img src="https://www.npmjs.com/static/images/touch-icons/favicon-32x32.png" height="25" /> NPM CLI (click to open)</summary><p>
 ***Pre-requisites***
 
-- [Node 6+](https://nodejs.org/en/)
+- [Node 6.x](https://nodejs.org/en/)
 - A running mongo instance
+- [Yarn](https://yarnpkg.com/en/) - For installation and package management (replaces NPM in this project)
 
 ***Installation and Running***
 ```bash
-npm install -g brigadehub-admin-gateway
+yarn global add brigadehub-admin-gateway
 brigadehub-admin-gateway --port desiredport --mongodb mongodb://location.of.mongo:27017/brigadehub-admin-gateway
 ```
 </p></details><br/>
@@ -212,15 +254,16 @@ brigadehub-admin-gateway --port desiredport --mongodb mongodb://location.of.mong
 ***Pre-requisites***
 
 - Git
-- [Node 6+](https://nodejs.org/en/)
+- [Node 6.x](https://nodejs.org/en/)
 - A running mongo instance
+- [Yarn](https://yarnpkg.com/en/) - For installation and package management (replaces NPM in this project)
 
 ***Installation and Running***
 ```bash
 git clone https://github.com/brigadehub/admin-gateway
 cd admin-gateway
 make install
-PORT=desiredport MONGODB_URI=mongodb://location.of.mongo:27017/brigadehub-admin-gateway make start
+make start
 ```
 </p></details>
 
@@ -232,39 +275,74 @@ To work on Brigadehub Admin Gateway as a developer, you need to clone and link i
 ***Pre-requisites***
 
 - Git
-- [Node 6+](https://nodejs.org/en/)
+- [Node 6.x](https://nodejs.org/en/)
 - A running mongo instance
+- [Yarn](https://yarnpkg.com/en/) - For installation and package management (replaces NPM in this project)
 
 ***Installation and Running***
 
+First, clone the following repositories into your own account, either your organization's org or your personal account:
+
+- [brigadehub/admin-gateway](https://github.com/brigadehub/admin-gateway)
+- [brigadehub/core](https://github.com/brigadehub/core)
+- [brigadehub/theme-admin-c4sf](https://github.com/brigadehub/theme-admin-c4sf)
+
+Once you've forked all three, clone the repos locally (replacing `your-account` with the appropriate org/account name):
+
 ```bash
-git clone https://github.com/brigadehub/admin-gateway
-git clone https://github.com/brigadehub/core
-git clone https://github.com/brigadehub/theme-admin-c4sf
+git clone https://github.com/your-account/admin-gateway
+git clone https://github.com/your-account/core
+git clone https://github.com/your-account/theme-admin-c4sf
 ```
 
 In separate terminals, run the following:
 
 ```bash
 cd theme-admin-c4sf
+make upstream/set
 make install
 make link
 ```
 
 ```bash
 cd core
+make upstream/set
 make install
 make link
 ```
 
 ```bash
 cd admin-gateway
+make upstream/set
 make install
 make link
-MONGODB_URI=mongodb://location.of.mongo:27017/brigadehub-admin-gateway make start/develop
+make start/develop
 ```
 
 Any changes made in core and theme-admin-c4sf will restart the server in admin-gateway, and allow you to preview the changes. When you're done with your changes, make sure the tests pass via `make test`, and create a pull request from the appropriate repo.
+
+***Sync Changes with Upstream***
+
+To pull the most recent changes from `upstream/master`, run the following command:
+
+```
+make upstream/sync
+```
+
+This will fetch the upstream `master` branch and merge those changes into your local `master` branch.
+
+***Push Changes Upstream***
+
+To push your development changes back to the main brigadehub repo, push your changes up to your branch, and make a Pull Request into the upstream repository's `master` branch. Please include the following information in your pull request:
+
+- A description of the problem you are addressing (or feature being added)
+- A link to the related Github Issue (if applicable)
+- If making changes to UI, screenshots of the changes presented
+- List any deprecations that may be presented
+- If you are a new contributor, your name, github handle, and (optionally) website for the maintainers list
+
+Please keep in mind that application changes are subject to review and revision, and may be rejected at the project maintainers discretion.
+
 
 </p></details>
 
@@ -297,12 +375,13 @@ docker run -d --expose=8080:desiredport -e MONGODB='mongodb://location.of.mongo:
 <details><summary><img src="https://www.npmjs.com/static/images/touch-icons/favicon-32x32.png" height="25" /> NPM CLI (click to open)</summary><p>
 ***Pre-requisites***
 
-- [Node 6+](https://nodejs.org/en/)
+- [Node 6.x](https://nodejs.org/en/)
 - A running mongo instance
+- [Yarn](https://yarnpkg.com/en/) - For installation and package management (replaces NPM in this project)
 
 ***Installation and Running***
 ```bash
-npm install -g brigadehub-mini
+yarn global add brigadehub-mini
 brigadehub-mini --port desiredport --mongodb mongodb://location.of.mongo:27017/brigadehub-mini
 ```
 </p></details><br/>
@@ -311,15 +390,16 @@ brigadehub-mini --port desiredport --mongodb mongodb://location.of.mongo:27017/b
 ***Pre-requisites***
 
 - Git
-- [Node 6+](https://nodejs.org/en/)
+- [Node 6.x](https://nodejs.org/en/)
 - A running mongo instance
+- [Yarn](https://yarnpkg.com/en/) - For installation and package management (replaces NPM in this project)
 
 ***Installation and Running***
 ```bash
 git clone https://github.com/brigadehub/mini
 cd mini
 make install
-PORT=desiredport MONGODB_URI=mongodb://location.of.mongo:27017/brigadehub-mini make start
+make start
 ```
 </p></details>
 
@@ -331,38 +411,72 @@ To work on Brigadehub Mini as a developer, you need to clone and link internally
 ***Pre-requisites***
 
 - Git
-- [Node 6+](https://nodejs.org/en/)
+- [Node 6.x](https://nodejs.org/en/)
 - A running mongo instance
+- [Yarn](https://yarnpkg.com/en/) - For installation and package management (replaces NPM in this project)
 
 ***Installation and Running***
 
+First, clone the following repositories into your own account, either your organization's org or your personal account:
+
+- [brigadehub/mini](https://github.com/brigadehub/mini)
+- [brigadehub/core](https://github.com/brigadehub/core)
+
+Once you've forked both repos, clone the repos locally (replacing `your-account` with the appropriate org/account name):
+
 ```bash
-git clone https://github.com/brigadehub/mini
-git clone https://github.com/brigadehub/theme-admin-c4sf
+git clone https://github.com/your-account/mini
+git clone https://github.com/your-account/theme-admin-c4sf
 ```
 
 In separate terminals, run the following:
 
 ```bash
 cd core
+make upstream/set
 make install
 make link
 ```
 
 ```bash
 cd mini
+make upstream/set
 make install
 make link
-MONGODB_URI=mongodb://location.of.mongo:27017/brigadehub-mini make start/develop
+make start/develop
 ```
 
 Any changes made in core and theme-admin-c4sf will restart the server in mini, and allow you to preview the changes. When you're done with your changes, make sure the tests pass via `make test`, and create a pull request from the appropriate repo.
+
+
+***Sync Changes with Upstream***
+
+To pull the most recent changes from `upstream/master`, run the following command:
+
+```
+make upstream/sync
+```
+
+This will fetch the upstream `master` branch and merge those changes into your local `master` branch.
+
+***Push Changes Upstream***
+
+To push your development changes back to the main brigadehub repo, push your changes up to your branch, and make a Pull Request into the upstream repository's `master` branch. Please include the following information in your pull request:
+
+- A description of the problem you are addressing (or feature being added)
+- A link to the related Github Issue (if applicable)
+- If making changes to UI, screenshots of the changes presented
+- List any deprecations that may be presented
+- If you are a new contributor, your name, github handle, and (optionally) website for the maintainers list
+
+Please keep in mind that application changes are subject to review and revision, and may be rejected at the project maintainers discretion.
+
 
 </p></details>
 
 #### [Usage](#usage)
 ##### [Core API](#core-api)
-*Core API Documentation is being worked on*
+*Core API Documentation can be found on [gitbook](https://brigadehub.gitbooks.io/core-api/)
 ##### [Admin Theme](#admin-theme)
 *Admin Theme Documentation is being worked on*
 ##### [Public Theme](#public-theme)
@@ -380,19 +494,29 @@ The changelog for Brigadehub (and each of its components) resides in the appropr
 
 Brigadehub is a Code for San Francisco Infrastructure project, and has been brought about by the generous work of the following individuals. If you make a contribution to Brigadehub (e.g. when opening a PR), feel free to add yourself to this list in addition to your changes. If you are contributing in a non-code fashion, open an issue to have your name added.
 
+##### Current Contributors
+
 - Oz Haven - Project Lead - ([@therebelrobot](https://github.com/therebelrobot)) <`github``@``therebelrobot.com`>
+- Bas Sondag - [@BasSondag](https://github.com/BasSondag)
+- Perry Taylor - [@pltaylor](https://github.com/pltaylor)
+
+##### Pre-Beta Contributors
+
 - Todd Seller - Project Co-Lead - [@toddseller](https://github.com/toddseller)
+- David Hincapie [@davidhincapie](https://github.com/davidhincapie)
+- John Gluck [@johngluck65](https://github.com/johngluck65)
+
+##### Pre-Alpha Contributors
+
 - Aaron Schachter [@aaronschachter](https://github.com/aaronschachter)
 - Andrew Bacon [@andrewmbacon](https://github.com/andrewmbacon)
 - David Carvel [@davidcarvel](https://github.com/davidcarvel)
-- David Hincapie [@davidhincapie](https://github.com/davidhincapie)
 - Deborah [@deborahahn](https://github.com/deborahahn)
 - Debbie Espino [@despino](https://github.com/despino)
 - Gisela [@GiselaKay](https://github.com/GiselaKay)
 - Leo Lau [@hawflau](https://github.com/hawflau)
 - Jason Durant [@jaydurant](https://github.com/jaydurant)
 - John Naulty Jr. [@jnaulty](https://github.com/jnaulty)
-- John Gluck [@johngluck65](https://github.com/johngluck65)
 - Jesse Szwedko [@jszwedko Owner](https://github.com/jszwedko Owner)
 - Jessica Parsons [@verythorough](https://github.com/verythorough)
 - Judy5000 [@Judy5000 Owner](https://github.com/Judy5000 Owner)
